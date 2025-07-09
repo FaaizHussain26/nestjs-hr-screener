@@ -1,16 +1,11 @@
-import {
-  Controller,
-  Post,
-  Body,
-  Query,
-  Get,
-} from '@nestjs/common';
+import { Controller, Post, Body, Query, Get } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { CreateUserDto } from './dtos/create-user.dto';
+
 import { UserService } from '../services/user.service';
-import { LoginUserDto } from './dtos/signin.dto';
+import { LoginUserDto } from './dtos/signin-user.dto';
 import { ForgotPasswordDto } from './dtos/forgot-password.dto';
 import { updatePasswordDto } from './dtos/update-passord.dto';
+import { SignUpUserDto } from './dtos/signup-user.dto';
 
 @Controller('auth')
 @ApiBearerAuth()
@@ -22,8 +17,8 @@ export class UserController {
     return this.userservice.Getall();
   }
   @Post('signup')
-  signup(@Body() createuserdto: CreateUserDto) {
-    return this.userservice.signup(createuserdto);
+  signup(@Body() signUpUserDTO: SignUpUserDto) {
+    return this.userservice.signup(signUpUserDTO);
   }
 
   @Post('signin')

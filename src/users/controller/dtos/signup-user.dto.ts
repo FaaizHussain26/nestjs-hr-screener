@@ -5,7 +5,7 @@ export class SignUpUserDto {
   @ApiProperty({
     description: 'first Name',
     example: 'John',
-    required: false,
+    required: true,
   })
   @IsString()
   firstName: string;
@@ -13,7 +13,7 @@ export class SignUpUserDto {
   @ApiProperty({
     description: 'Last Name',
     example: 'Smith',
-    required: false,
+    required: true,
   })
   @IsString()
   lastName: string;
@@ -28,7 +28,7 @@ export class SignUpUserDto {
   @ApiProperty({
     description: 'Passeord',
     example: 'abc123@',
-    required: false,
+    required: true,
   })
   @IsString()
   @MinLength(6)
