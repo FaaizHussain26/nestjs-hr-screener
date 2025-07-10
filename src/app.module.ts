@@ -55,18 +55,16 @@ import { ShortlistedCvModule } from './shortlisted-cv/shortlisted-cv.module';
     }),
 
     MongooseModule.forRootAsync({
-      imports: [ConfigModule], 
-      inject: [ConfigService], 
+      imports: [ConfigModule],
+      inject: [ConfigService],
       useFactory: async (configService: ConfigService) => {
         const uri = configService.get<string>('MONGO_URI');
         if (!uri) {
           throw new Error('MONGO_URI is not defined in .env');
         }
-
-        console.log('Trying to connect to MongoDB at:', uri);
         return {
           uri,
-          dbName: 'Agents', 
+          dbName: 'Agents',
         };
       },
     }),

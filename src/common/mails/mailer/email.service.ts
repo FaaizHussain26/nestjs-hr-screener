@@ -27,24 +27,12 @@ export class EmailService {
       console.error('Error sending email:', err);
     }
   }
-
-  // @OnEvent('user.registered')
-  // async handleUserRegisteredEvent(record: any) {
-  //   console.log(record);
-  //   await this.sendDynamicEmail({
-  //     subject: "New member's Registered",
-  //     toEmail: record.email,
-  //     data: `<b>Welcome ${record.email}<b> <br/> <p>You have been registered Successfully</p>`,
-  //   });
-  // }
-
   @OnEvent('forgot.password')
   async handleForgotPasswordEvent(record: any) {
-    console.log(record);
     await this.sendDynamicEmail({
-      subject: 'Otp : Forgot Password',
+      subject: 'Reset Password Link : Forgot Password',
       toEmail: record.email,
-      data: `<b>Dear ${record.email}</b> <br/> <p>Your Reset password link is <b>${record.link}</b> you can now reset your password</p>`,
+      data: `<b>Dear ${record.email}</b> <br/> <p>Your Reset password link is <b> ${record.link} </b> you can now reset your password</p>`,
     });
   }
 }
