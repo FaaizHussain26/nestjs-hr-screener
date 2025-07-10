@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Query, Get } from '@nestjs/common';
+import { Controller, Post, Body, Query, Get, HttpCode } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 import { UserService } from '../services/user.service';
@@ -16,16 +16,16 @@ export class UserController {
   Getall() {
     return this.userservice.Getall();
   }
+  @HttpCode(201)
   @Post('signup')
   signup(@Body() signUpUserDTO: SignUpUserDto) {
     return this.userservice.signup(signUpUserDTO);
   }
-
+  @HttpCode(200)
   @Post('signin')
   signin(@Body() logindto: LoginUserDto) {
     return this.userservice.signin(logindto);
   }
-
   @Post('forgotPassword')
   forgotpassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
     return this.userservice.forgotPassword(forgotPasswordDto.email);

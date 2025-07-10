@@ -15,12 +15,12 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
           port: 465,
           secure: true,
           auth: {
-            user: configService.get<string>('EMAIL_USER'),
-            pass: configService.get<string>('EMAIL_PASSWORD'),
+            user: configService.get<string>('BREVO_EMAIL'),
+            pass: configService.get<string>('BREVO_PASSWORD'),
           },
         },
         defaults: {
-          from: '"shaheer" <shaheer.99.ahmed@gmail.com  >',
+          from: `"shaheer" ${configService.get<string>('BREVO_USER')}`,
         },
       }),
       inject: [ConfigService],
