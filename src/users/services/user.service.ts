@@ -33,7 +33,6 @@ export class UserService {
       const { firstName, lastName, email, password } = signUpUserDTO;
       const existingUser = await this.userrepo.getByEmail(email);
       if (existingUser) throw new ConflictException('Email already in use');
-      console.log(`sign up :email: ${email} Psssword: ${password}`);
       const hashedPassword = await bcrypt.hash(password, 10);
       const user = await this.userrepo.create({
         firstName,
@@ -41,7 +40,6 @@ export class UserService {
         email,
         password: hashedPassword,
       });
-      console.log(user.id);
       const extractUser = await this.userrepo.getbyId(user.id);
       return { Success: true, message: 'User Signup successfully' };
     } catch (error) {
@@ -60,7 +58,6 @@ export class UserService {
       throw new UnauthorizedException('Invalid credentials');
     }
     const payload = { sub: existingUser._id };
-    console.log(payload);
     const token = await this.jwtService.sign(
       { payload },
       {
@@ -91,15 +88,15 @@ export class UserService {
 
       const resetLink = `${frontendBaseUrl}/reset-password?token=${token}`;
 
-      // Emit or send email with the link
-      await this.eventEmitter.emit('forgot.password', {
+      const emailSend = await this.eventEmitter.emit('forgot.password', {
         email,
         link: resetLink,
       });
-
-      return { success: true, message: 'Password reset link sent to email.' };
+      if (!emailSend) {
+        return { success: false, message: 'Email not send.' };
+      }
+      return { success: true, message: 'Password reset link sent to your email.' };
     } catch (error) {
-      console.error('Error in forgotPassword:', error);
       return { success: false, message: 'Server error' };
     }
   }
