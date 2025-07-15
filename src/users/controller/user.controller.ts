@@ -4,16 +4,20 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Param,
   Post,
+  Put,
   Query,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 import { UserService } from '../services/user.service';
 import { ForgotPasswordDto } from './dtos/forgot-password.dto';
-import { LoginUserDto } from './dtos/signin-user.dto';
-import { SignUpUserDto } from './dtos/signup-user.dto';
-import { updatePasswordDto } from './dtos/update-passord.dto';
+import { LoginUserDto } from './dtos/login-user.dto';
+import { RegistrationUserDto } from './dtos/registration-user.dto';
+import { ResetPasswordDto } from './dtos/reset-password.dto';
+import { UpdateProfileDto } from './dtos/update-user-profile.dto';
+import { UpdatePasswordDto } from './dtos/update-password.dto';
 
 @Controller('auth')
 @ApiBearerAuth()
@@ -21,34 +25,45 @@ import { updatePasswordDto } from './dtos/update-passord.dto';
 export class UserController {
   constructor(private readonly userservice: UserService) {}
   @HttpCode(HttpStatus.CREATED)
-  @Get('/')
-  Getall() {
-    return this.userservice.Getall();
-  }
-  @HttpCode(HttpStatus.CREATED)
-  @Post('signup')
-  signup(@Body() signUpUserDTO: SignUpUserDto) {
-    return this.userservice.signup(signUpUserDTO);
+  @Post('register')
+  async register(@Body() registrationUserDto: RegistrationUserDto) {
+    return await this.userservice.registration(registrationUserDto);
   }
   @HttpCode(HttpStatus.OK)
-  @Post('signin')
-  signin(@Body() logindto: LoginUserDto) {
-    return this.userservice.signin(logindto);
+  @Post('login')
+  async login(@Body() loginDto: LoginUserDto) {
+    return await this.userservice.login(loginDto);
   }
   @HttpCode(HttpStatus.OK)
-  @Post('forgotPassword')
-  forgotpassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
-    return this.userservice.forgotPassword(forgotPasswordDto.email);
+  @Post('forgot-password')
+  async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
+    return await this.userservice.forgotPassword(forgotPasswordDto.email);
   }
   @HttpCode(HttpStatus.OK)
   @Get('verify-reset-token')
   async verifyResetToken(@Query('token') token: string) {
-    return this.userservice.verifyForgotPasswordToken(token);
+    return await this.userservice.verifyForgotPasswordToken(token);
+  }
+  @HttpCode(HttpStatus.OK)
+  @Post('reset-password')
+  async resetPassword(@Body() resetpassword: ResetPasswordDto) {
+    return await this.userservice.resetPassword(resetpassword);
   }
 
   @HttpCode(HttpStatus.OK)
-  @Post('resetpassword')
-  async updatepassword(@Body() updatepassword: updatePasswordDto) {
-    return this.userservice.resetPassword(updatepassword);
+  @Put('update-profile/:id')
+  async updateprofile(
+    @Param('id') id: string,
+    @Body() updateprofile: UpdateProfileDto,
+  ) {
+    return await this.userservice.updateProfile(id, updateprofile);
+  }
+  @HttpCode(HttpStatus.OK)
+  @Put('update-password/:id')
+  async updatePassword(
+    @Param('id') id: string,
+    @Body() setpassword: UpdatePasswordDto,
+  ) {
+    return await this.userservice.updatePassword(id, setpassword);
   }
 }
