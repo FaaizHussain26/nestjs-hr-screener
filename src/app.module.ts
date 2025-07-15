@@ -22,7 +22,7 @@ import { ShortlistedCvModule } from './shortlisted-cv/shortlisted-cv.module';
         if (!uri) {
           throw new Error('MONGO_URI is not defined in .env');
         }
-        Logger.log('MongoDB connected');
+        Logger.log('MongoDB connected',uri);
         return {
           uri,
           dbName: configService.get<string>('MONGO_DB_NAME'),

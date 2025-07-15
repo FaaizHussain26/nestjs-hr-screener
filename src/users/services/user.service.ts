@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   UnauthorizedException,
@@ -7,10 +8,13 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UserRepository } from '../repositories/user.repo';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { LoginUserDto } from '../controller/dtos/signin-user.dto';
-import { updatePasswordDto } from '../controller/dtos/update-passord.dto';
+import { LoginUserDto } from '../controller/dtos/login-user.dto';
+import { ResetPasswordDto } from '../controller/dtos/reset-password.dto';
 import { ConfigService } from '@nestjs/config';
-import { SignUpUserDto } from '../controller/dtos/signup-user.dto';
+import { RegistrationUserDto } from '../controller/dtos/registration-user.dto';
+import { UpdateProfileDto } from '../controller/dtos/update-user-profile.dto';
+import { Types } from 'mongoose';
+import { UpdatePasswordDto } from '../controller/dtos/update-password.dto';
 
 @Injectable()
 export class UserService {
@@ -21,16 +25,9 @@ export class UserService {
     private readonly configService: ConfigService,
   ) {}
 
-  async Getall() {
+  async registration(payload: RegistrationUserDto) {
     try {
-      return await this.userrepo.getAll();
-    } catch (error) {
-      throw error;
-    }
-  }
-  async signup(signUpUserDTO: SignUpUserDto) {
-    try {
-      const { firstName, lastName, email, password } = signUpUserDTO;
+      const { firstName, lastName, email, password } = payload;
       const existingUser = await this.userrepo.getByEmail(email);
       if (existingUser) throw new ConflictException('Email already in use');
       const hashedPassword = await bcrypt.hash(password, 10);
@@ -41,14 +38,18 @@ export class UserService {
         password: hashedPassword,
       });
       const extractUser = await this.userrepo.getbyId(user.id);
-      return { Success: true, message: 'User Signup successfully' };
+      return {
+        success: true,
+        message: 'User registered successfully',
+        extractUser,
+      };
     } catch (error) {
       throw error;
     }
   }
 
-  async signin(logindto: LoginUserDto) {
-    const { email, password } = logindto;
+  async login(payload: LoginUserDto) {
+    const { email, password } = payload;
     const existingUser = await this.userrepo.getByEmail(email);
 
     if (
@@ -57,9 +58,9 @@ export class UserService {
     ) {
       throw new UnauthorizedException('Invalid credentials');
     }
-    const payload = { sub: existingUser._id };
+    const data = { sub: existingUser._id };
     const token = await this.jwtService.sign(
-      { payload },
+      { data },
       {
         secret: this.configService.get<string>('JWT_SECRET'),
         expiresIn: this.configService.get<string>('JWT_EXPIRY'),
@@ -67,6 +68,7 @@ export class UserService {
     );
     return {
       accessToken: token,
+      existingUser,
     };
   }
 
@@ -95,7 +97,10 @@ export class UserService {
       if (!emailSend) {
         return { success: false, message: 'Email not send.' };
       }
-      return { success: true, message: 'Password reset link sent to your email.' };
+      return {
+        success: true,
+        message: 'Password reset link sent to your email.',
+      };
     } catch (error) {
       return { success: false, message: 'Server error' };
     }
@@ -113,9 +118,9 @@ export class UserService {
     }
   }
 
-  async resetPassword(dto: updatePasswordDto) {
+  async resetPassword(payload: ResetPasswordDto) {
     try {
-      const { token, newpassword } = dto;
+      const { token, newpassword } = payload;
       const jwtSecret = this.configService.get<string>('JWT_SECRET');
       const decoded = await this.jwtService.verifyAsync(token, {
         secret: jwtSecret,
@@ -129,7 +134,49 @@ export class UserService {
       const hashedPassword = await bcrypt.hash(newpassword, 10);
       user.password = hashedPassword;
 
-      await this.userrepo.create(user);
+      const passworReset = await this.userrepo.updateProfile(user.id, user);
+
+      return { success: true, message: 'Password updated successfully.' };
+    } catch (error) {
+      return { success: false, message: 'Invalid or expired token.' };
+    }
+  }
+
+  async updateProfile(id: string, payload: UpdateProfileDto) {
+    try {
+      if (!Types.ObjectId.isValid(id)) {
+        return { success: false, message: 'Invalid user ID' };
+      }
+      const existingUser = await this.userrepo.getbyId(id);
+      if (!existingUser) {
+        return { success: false, message: 'User not found' };
+      }
+      return await this.userrepo.updateProfile(id, payload);
+    } catch (error) {
+      return { success: false, message: error.message };
+    }
+  }
+
+  async updatePassword(id: string, payload: UpdatePasswordDto) {
+    try {
+      if (!Types.ObjectId.isValid(id)) {
+        return { success: false, message: 'Invalid user ID' };
+      }
+      const { currentpassword, newpassword } = payload;
+      const user = await this.userrepo.getbyId(id);
+      if (!user) {
+        return { success: false, message: 'User not found' };
+      }
+      const comparePassword = await bcrypt.compare(
+        currentpassword,
+        user.password,
+      );
+      if (!comparePassword) {
+        return { success: false, message: 'Old Password is not correct' };
+      }
+      const hashedPassword = await bcrypt.hash(newpassword, 10);
+      user.password = hashedPassword;
+      await this.userrepo.updateProfile(id, user);
 
       return { success: true, message: 'Password updated successfully.' };
     } catch (error) {

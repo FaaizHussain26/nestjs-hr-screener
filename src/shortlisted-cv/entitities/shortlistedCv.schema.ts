@@ -1,13 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-// import { BaseMongoEntity } from 'src/common/entities/base.schema';
 
-
-// export type ShortlistedCvDocument = ShortlistedCv & Document;
-
-@Schema({ timestamps: true, collection: 'ShortlistedCvSchema'  })
-export class ShortlistedCv extends Document  {
- @Prop({ required: true })
+@Schema({ timestamps: true, collection: 'ShortlistedCvSchema' })
+export class ShortlistedCv extends Document {
+  @Prop({ required: true })
   fullName: string;
 
   @Prop({ required: true })
@@ -30,7 +26,6 @@ export class ShortlistedCv extends Document  {
 
   @Prop({ required: true })
   resumeLink: string;
-
 }
 
 export const ShortlistedCvSchema = SchemaFactory.createForClass(ShortlistedCv);
