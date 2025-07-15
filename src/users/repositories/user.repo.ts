@@ -12,20 +12,23 @@ export class UserRepository {
 
   async create(user: Partial<User>): Promise<User> {
     const newUser = new this.userModel(user);
-    return newUser.save();
+    return await newUser.save();
   }
 
   async getAll(): Promise<User[]> {
-    return this.userModel.find().exec();
+    return await this.userModel.find().exec();
   }
   async getbyId(id: string): Promise<User | null> {
-    return this.userModel.findById(id).exec();
+    return await this.userModel.findById(id).exec();
   }
   async getByEmail(userEmail: string): Promise<User | null> {
-    return this.userModel.findOne({ email: userEmail }).exec();
+    return await this.userModel.findOne({ email: userEmail }).exec();
   }
-  async updateProfile(id:string, user:Partial<User>): Promise<User | null>{
-    return await this.userModel.findOneAndUpdate({ _id: id}, { $set: user },
-    { new: true })
+  async updateProfile(id: string, user: Partial<User>): Promise<User | null> {
+    return await this.userModel.findOneAndUpdate(
+      { _id: id },
+      { $set: user },
+      { new: true },
+    );
   }
 }

@@ -26,18 +26,18 @@ export class UserController {
   constructor(private readonly userservice: UserService) {}
   @HttpCode(HttpStatus.CREATED)
   @Post('register')
-  async register(@Body() registrationUserDto: RegistrationUserDto) {
-    return await this.userservice.registration(registrationUserDto);
+  async register(@Body() payload: RegistrationUserDto) {
+    return await this.userservice.registration(payload);
   }
   @HttpCode(HttpStatus.OK)
   @Post('login')
-  async login(@Body() loginDto: LoginUserDto) {
-    return await this.userservice.login(loginDto);
+  async login(@Body() payload: LoginUserDto) {
+    return await this.userservice.login(payload);
   }
   @HttpCode(HttpStatus.OK)
   @Post('forgot-password')
-  async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
-    return await this.userservice.forgotPassword(forgotPasswordDto.email);
+  async forgotPassword(@Body() payload: ForgotPasswordDto) {
+    return await this.userservice.forgotPassword(payload.email);
   }
   @HttpCode(HttpStatus.OK)
   @Get('verify-reset-token')
@@ -46,24 +46,24 @@ export class UserController {
   }
   @HttpCode(HttpStatus.OK)
   @Post('reset-password')
-  async resetPassword(@Body() resetpassword: ResetPasswordDto) {
-    return await this.userservice.resetPassword(resetpassword);
+  async resetPassword(@Body() payload: ResetPasswordDto) {
+    return await this.userservice.resetPassword(payload);
   }
 
   @HttpCode(HttpStatus.OK)
   @Put('update-profile/:id')
   async updateprofile(
     @Param('id') id: string,
-    @Body() updateprofile: UpdateProfileDto,
+    @Body() payload: UpdateProfileDto,
   ) {
-    return await this.userservice.updateProfile(id, updateprofile);
+    return await this.userservice.updateProfile(id, payload);
   }
   @HttpCode(HttpStatus.OK)
   @Put('update-password/:id')
   async updatePassword(
     @Param('id') id: string,
-    @Body() setpassword: UpdatePasswordDto,
+    @Body() payload: UpdatePasswordDto,
   ) {
-    return await this.userservice.updatePassword(id, setpassword);
+    return await this.userservice.updatePassword(id, payload);
   }
 }

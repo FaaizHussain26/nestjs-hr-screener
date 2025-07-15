@@ -25,16 +25,9 @@ export class UserService {
     private readonly configService: ConfigService,
   ) {}
 
-  // async Getall() {
-  //   try {
-  //     return await this.userrepo.getAll();
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // }
-  async registration(registrationUserDto: RegistrationUserDto) {
+  async registration(payload: RegistrationUserDto) {
     try {
-      const { firstName, lastName, email, password } = registrationUserDto;
+      const { firstName, lastName, email, password } = payload;
       const existingUser = await this.userrepo.getByEmail(email);
       if (existingUser) throw new ConflictException('Email already in use');
       const hashedPassword = await bcrypt.hash(password, 10);
@@ -46,8 +39,8 @@ export class UserService {
       });
       const extractUser = await this.userrepo.getbyId(user.id);
       return {
-        Success: true,
-        message: 'User Signup successfully',
+        success: true,
+        message: 'User registered successfully',
         extractUser,
       };
     } catch (error) {
@@ -55,8 +48,8 @@ export class UserService {
     }
   }
 
-  async login(logindto: LoginUserDto) {
-    const { email, password } = logindto;
+  async login(payload: LoginUserDto) {
+    const { email, password } = payload;
     const existingUser = await this.userrepo.getByEmail(email);
 
     if (
@@ -65,9 +58,9 @@ export class UserService {
     ) {
       throw new UnauthorizedException('Invalid credentials');
     }
-    const payload = { sub: existingUser._id };
+    const data = { sub: existingUser._id };
     const token = await this.jwtService.sign(
-      { payload },
+      { data },
       {
         secret: this.configService.get<string>('JWT_SECRET'),
         expiresIn: this.configService.get<string>('JWT_EXPIRY'),
@@ -125,9 +118,9 @@ export class UserService {
     }
   }
 
-  async resetPassword(dto: ResetPasswordDto) {
+  async resetPassword(payload: ResetPasswordDto) {
     try {
-      const { token, newpassword } = dto;
+      const { token, newpassword } = payload;
       const jwtSecret = this.configService.get<string>('JWT_SECRET');
       const decoded = await this.jwtService.verifyAsync(token, {
         secret: jwtSecret,
@@ -141,7 +134,7 @@ export class UserService {
       const hashedPassword = await bcrypt.hash(newpassword, 10);
       user.password = hashedPassword;
 
-      await this.userrepo.create(user);
+      const passworReset = await this.userrepo.updateProfile(user.id, user);
 
       return { success: true, message: 'Password updated successfully.' };
     } catch (error) {
@@ -149,7 +142,7 @@ export class UserService {
     }
   }
 
-  async updateProfile(id: string, dto: UpdateProfileDto) {
+  async updateProfile(id: string, payload: UpdateProfileDto) {
     try {
       if (!Types.ObjectId.isValid(id)) {
         return { success: false, message: 'Invalid user ID' };
@@ -158,18 +151,18 @@ export class UserService {
       if (!existingUser) {
         return { success: false, message: 'User not found' };
       }
-      return await this.userrepo.updateProfile(id, dto);
+      return await this.userrepo.updateProfile(id, payload);
     } catch (error) {
       return { success: false, message: error.message };
     }
   }
 
-  async updatePassword(id: string, dto: UpdatePasswordDto) {
+  async updatePassword(id: string, payload: UpdatePasswordDto) {
     try {
       if (!Types.ObjectId.isValid(id)) {
         return { success: false, message: 'Invalid user ID' };
       }
-      const { currentpassword, newpassword } = dto;
+      const { currentpassword, newpassword } = payload;
       const user = await this.userrepo.getbyId(id);
       if (!user) {
         return { success: false, message: 'User not found' };
@@ -183,8 +176,6 @@ export class UserService {
       }
       const hashedPassword = await bcrypt.hash(newpassword, 10);
       user.password = hashedPassword;
-
-      // await this.userrepo.create(user);
       await this.userrepo.updateProfile(id, user);
 
       return { success: true, message: 'Password updated successfully.' };
