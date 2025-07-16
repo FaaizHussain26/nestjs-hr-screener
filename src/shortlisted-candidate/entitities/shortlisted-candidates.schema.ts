@@ -35,6 +35,12 @@ export class ShortlistedCandidates extends Document {
 
   @Prop({ required: false })
   applicant_phone: string;
+
+  @Prop({ default: false })
+  isDeleted: boolean;
+
+  @Prop({ type: Date, default: null })
+  deletedAt: Date;
 }
 
 export const ShortlistedSchema = SchemaFactory.createForClass(

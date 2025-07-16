@@ -1,4 +1,4 @@
-import { IsOptional, IsPositive, Min } from 'class-validator';
+import { IsOptional, IsPositive, IsString, Min } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -47,4 +47,14 @@ export class PaginationQueryDto {
     required: false,
   })
   filter?: string;
+
+   @IsOptional()
+   @IsString()
+  @ApiProperty({
+    description: 'String',
+    example: 'John',
+    required: false,
+  })
+  search?: string;
+
 }
