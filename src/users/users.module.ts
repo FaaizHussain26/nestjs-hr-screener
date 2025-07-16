@@ -4,17 +4,18 @@ import { UserService } from './services/user.service';
 import { MongooseModule } from '@nestjs/mongoose';
 
 import { EventEmitterModule } from '@nestjs/event-emitter';
-import { JwtService } from '@nestjs/jwt';
 import { User, UserSchema } from './entitities/user.schema';
 import { UserRepository } from './repositories/user.repo';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     EventEmitterModule.forRoot(),
+    AuthModule,
   ],
   controllers: [UserController],
-  providers: [UserService, JwtService, UserRepository],
+  providers: [UserService, UserRepository],
   exports: [MongooseModule],
 })
 export class UsersModule {}

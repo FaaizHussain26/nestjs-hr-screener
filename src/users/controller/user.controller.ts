@@ -8,6 +8,7 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
@@ -18,32 +19,40 @@ import { RegistrationUserDto } from './dtos/registration-user.dto';
 import { ResetPasswordDto } from './dtos/reset-password.dto';
 import { UpdateProfileDto } from './dtos/update-user-profile.dto';
 import { UpdatePasswordDto } from './dtos/update-password.dto';
+import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { User } from '../entitities/user.schema';
+import { AuthUser } from 'src/common/decorator/auth.decorator';
 
 @Controller('auth')
 @ApiBearerAuth()
 @ApiTags('Authentication')
 export class UserController {
   constructor(private readonly userservice: UserService) {}
+  
   @HttpCode(HttpStatus.CREATED)
   @Post('register')
   async register(@Body() payload: RegistrationUserDto) {
     return await this.userservice.registration(payload);
   }
+  
   @HttpCode(HttpStatus.OK)
   @Post('login')
   async login(@Body() payload: LoginUserDto) {
     return await this.userservice.login(payload);
   }
+  
   @HttpCode(HttpStatus.OK)
   @Post('forgot-password')
   async forgotPassword(@Body() payload: ForgotPasswordDto) {
     return await this.userservice.forgotPassword(payload.email);
   }
+  
   @HttpCode(HttpStatus.OK)
   @Get('verify-reset-token')
   async verifyResetToken(@Query('token') token: string) {
     return await this.userservice.verifyForgotPasswordToken(token);
   }
+  
   @HttpCode(HttpStatus.OK)
   @Post('reset-password')
   async resetPassword(@Body() payload: ResetPasswordDto) {
@@ -51,15 +60,18 @@ export class UserController {
   }
 
   @HttpCode(HttpStatus.OK)
-  @Put('update-profile/:id')
+  @Put('update-profile')
+  @UseGuards(JwtAuthGuard)
   async updateprofile(
-    @Param('id') id: string,
+    @AuthUser() user: User,
     @Body() payload: UpdateProfileDto,
   ) {
-    return await this.userservice.updateProfile(id, payload);
+    return await this.userservice.updateProfile(user, payload);
   }
+  
   @HttpCode(HttpStatus.OK)
-  @Put('update-password/:id')
+  @Put('update-password/')
+  @UseGuards(JwtAuthGuard)
   async updatePassword(
     @Param('id') id: string,
     @Body() payload: UpdatePasswordDto,
