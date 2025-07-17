@@ -15,6 +15,7 @@ import { RegistrationUserDto } from '../controller/dtos/registration-user.dto';
 import { UpdateProfileDto } from '../controller/dtos/update-user-profile.dto';
 import { Types } from 'mongoose';
 import { UpdatePasswordDto } from '../controller/dtos/update-password.dto';
+import { User } from '../entitities/user.schema';
 
 @Injectable()
 export class UserService {
@@ -57,10 +58,13 @@ export class UserService {
       !(await bcrypt.compare(password, existingUser.password))
     ) {
       throw new UnauthorizedException('Invalid credentials');
-    }
-    const data = { sub: existingUser._id };
-    const token = await this.jwtService.sign(
-      { data },
+    } 
+    
+    const token = await this.jwtService.sign(      
+      { 
+        sub: existingUser._id,
+        data: existingUser 
+      },
       {
         secret: this.configService.get<string>('JWT_SECRET'),
         expiresIn: this.configService.get<string>('JWT_EXPIRY'),
@@ -68,7 +72,7 @@ export class UserService {
     );
     return {
       accessToken: token,
-      existingUser,
+      user: existingUser,
     };
   }
 
@@ -142,16 +146,21 @@ export class UserService {
     }
   }
 
-  async updateProfile(id: string, payload: UpdateProfileDto) {
+  async updateProfile(user: User, payload: UpdateProfileDto) {
     try {
-      if (!Types.ObjectId.isValid(id)) {
-        return { success: false, message: 'Invalid user ID' };
-      }
-      const existingUser = await this.userrepo.getbyId(id);
+      const existingUser = await this.userrepo.getbyId(user._id as string);
+
       if (!existingUser) {
         return { success: false, message: 'User not found' };
       }
-      return await this.userrepo.updateProfile(id, payload);
+
+      const updatedUser = await this.userrepo.updateProfile(user._id as string, payload as any);
+
+      return {
+        success: true,
+        message: 'Profile updated successfully.',
+        user: updatedUser,
+      };
     } catch (error) {
       return { success: false, message: error.message };
     }
@@ -182,5 +191,9 @@ export class UserService {
     } catch (error) {
       return { success: false, message: 'Invalid or expired token.' };
     }
+  }
+
+  async getUserById(id: string) {
+    return await this.userrepo.getbyId(id);
   }
 }
