@@ -1,9 +1,10 @@
 import { Model } from 'mongoose';
-import { PaginationQueryDto } from './dtos/pagination-query.dto';
+import { PaginationQueryDto } from './dto/pagination-query.dto';
 
-export async function PaginateAndFilter(
-  model: Model<any>,
+export async function PaginateAndFilter<T>(
+  model: Model<T>,
   query: PaginationQueryDto,
+  searchableFields: string[],
 ) {
   const {
     page = 1,
@@ -11,6 +12,7 @@ export async function PaginateAndFilter(
     sortBy = 'createdAt',
     sortOrder = 'desc',
     filter,
+    search,
   } = query;
 
   const skip = (page - 1) * limit;
@@ -18,13 +20,21 @@ export async function PaginateAndFilter(
     [sortBy]: sortOrder === 'asc' ? 1 : -1,
   };
 
-  let filters = {};
+  type FilterValue = string | number | boolean | RegExp | object | null;
+
+  let filters: Record<string, FilterValue> = {};
   if (filter) {
     try {
       filters = JSON.parse(filter);
     } catch {
       throw new Error('Invalid filter format');
     }
+  }
+
+  if (search && searchableFields.length > 0) {
+    filters.$or = searchableFields.map((field) => ({
+      [field]: { $regex: new RegExp(search, 'i') },
+    }));
   }
 
   const dbQuery = model.find(filters).sort(sort).skip(skip).limit(limit);

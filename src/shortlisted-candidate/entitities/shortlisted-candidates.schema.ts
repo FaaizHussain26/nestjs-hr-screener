@@ -15,7 +15,7 @@ export class ShortlistedCandidates extends Document {
   @Prop({ required: false, type: [String] })
   matched_skills: string[];
 
-  @Prop({ required: false ,type: MongooseSchema.Types.Mixed  })
+  @Prop({ required: false, type: MongooseSchema.Types.Mixed })
   experience: object;
 
   @Prop({ required: false, type: [String] })
@@ -24,7 +24,7 @@ export class ShortlistedCandidates extends Document {
   @Prop({ required: false })
   match_score: number;
 
-  @Prop({ required: false , type: [String]})
+  @Prop({ required: false, type: [String] })
   jobs_matched: string[];
 
   @Prop({ required: false })
@@ -35,6 +35,15 @@ export class ShortlistedCandidates extends Document {
 
   @Prop({ required: false })
   applicant_phone: string;
+
+  @Prop({ default: false })
+  isDeleted: boolean;
+
+  @Prop({ default: false })
+  isDuplicated: boolean;
+
+  @Prop({ type: Date, default: null })
+  deletedAt: Date;
 }
 
 export const ShortlistedSchema = SchemaFactory.createForClass(
