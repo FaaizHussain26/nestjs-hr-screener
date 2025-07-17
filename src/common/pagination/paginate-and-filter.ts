@@ -1,6 +1,14 @@
 import { Model } from 'mongoose';
 import { PaginationQueryDto } from './dto/pagination-query.dto';
 
+export interface PaginationOutput<T> {
+  data: T[];
+  total: number;
+  current_page: number;
+  last_page: number;
+  per_page: number;
+}
+
 export async function PaginateAndFilter<T>(
   model: Model<T>,
   query: PaginationQueryDto,
@@ -47,8 +55,8 @@ export async function PaginateAndFilter<T>(
   return {
     data: items,
     total,
-    page,
-    limit,
-    totalPages: Math.ceil(total / limit),
+    current_page: page,
+    last_page: Math.ceil(total / limit),
+    per_page: limit,
   };
 }

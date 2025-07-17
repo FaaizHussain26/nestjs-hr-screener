@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { DeleteResult, Model } from 'mongoose';
 import { ShortlistedCandidateDto } from '../controller/dto/create-shortlisted-candidates.dto';
 import { ShortlistedCandidates } from '../entitities/shortlisted-candidates.schema';
-import { PaginateAndFilter } from 'src/common/pagination/paginate-and-filter';
+import { PaginateAndFilter, PaginationOutput } from 'src/common/pagination/paginate-and-filter';
 import { PaginationQueryDto } from 'src/common/pagination/dto/pagination-query.dto';
 
 @Injectable()
@@ -20,13 +20,13 @@ export class ShortlistedCandidatesRepository {
     return await create.save();
   }
 
-  async findAll(query: PaginationQueryDto): Promise<ShortlistedCandidates[]> {
+  async findAll(query: PaginationQueryDto): Promise<PaginationOutput<ShortlistedCandidates>> {
     const result = await PaginateAndFilter<ShortlistedCandidates>(
       this.candidateModel,
       query,
       ['applicant_name'],
     );
-    return result.data;
+    return result;
   }
   async getByEmail(email: string): Promise<ShortlistedCandidates | null> {
     return await this.candidateModel.findOne({ applicant_email: email }).exec();
