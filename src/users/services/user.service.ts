@@ -8,13 +8,13 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UserRepository } from '../repositories/user.repo';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { LoginUserDto } from '../controller/dtos/login-user.dto';
-import { ResetPasswordDto } from '../controller/dtos/reset-password.dto';
+import { LoginUserDto } from '../controller/dto/login-user.dto';
+import { ResetPasswordDto } from '../controller/dto/reset-password.dto';
 import { ConfigService } from '@nestjs/config';
-import { RegistrationUserDto } from '../controller/dtos/registration-user.dto';
-import { UpdateProfileDto } from '../controller/dtos/update-user-profile.dto';
+import { RegistrationUserDto } from '../controller/dto/registration-user.dto';
+import { UpdateProfileDto } from '../controller/dto/update-user-profile.dto';
 import { Types } from 'mongoose';
-import { UpdatePasswordDto } from '../controller/dtos/update-password.dto';
+import { UpdatePasswordDto } from '../controller/dto/update-password.dto';
 import { User } from '../entitities/user.schema';
 
 @Injectable()
@@ -58,12 +58,12 @@ export class UserService {
       !(await bcrypt.compare(password, existingUser.password))
     ) {
       throw new UnauthorizedException('Invalid credentials');
-    } 
-    
-    const token = await this.jwtService.sign(      
-      { 
+    }
+
+    const token = await this.jwtService.sign(
+      {
         sub: existingUser._id,
-        data: existingUser 
+        data: existingUser,
       },
       {
         secret: this.configService.get<string>('JWT_SECRET'),
@@ -154,7 +154,10 @@ export class UserService {
         return { success: false, message: 'User not found' };
       }
 
-      const updatedUser = await this.userrepo.updateProfile(user._id as string, payload as any);
+      const updatedUser = await this.userrepo.updateProfile(
+        user._id as string,
+        payload as any,
+      );
 
       return {
         success: true,

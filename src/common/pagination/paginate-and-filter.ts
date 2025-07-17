@@ -1,8 +1,8 @@
 import { Model } from 'mongoose';
-import { PaginationQueryDto } from './dtos/pagination-query.dto';
+import { PaginationQueryDto } from './dto/pagination-query.dto';
 
-export async function PaginateAndFilter(
-  model: Model<any>,
+export async function PaginateAndFilter<T>(
+  model: Model<T>,
   query: PaginationQueryDto,
   searchableFields: string[],
 ) {
@@ -20,7 +20,9 @@ export async function PaginateAndFilter(
     [sortBy]: sortOrder === 'asc' ? 1 : -1,
   };
 
-  let filters: Record<string, any> = {};
+  type FilterValue = string | number | boolean | RegExp | object | null;
+
+  let filters: Record<string, FilterValue> = {};
   if (filter) {
     try {
       filters = JSON.parse(filter);
@@ -29,7 +31,7 @@ export async function PaginateAndFilter(
     }
   }
 
-   if (search && searchableFields.length > 0) {
+  if (search && searchableFields.length > 0) {
     filters.$or = searchableFields.map((field) => ({
       [field]: { $regex: new RegExp(search, 'i') },
     }));

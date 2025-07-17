@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { PaginationQueryDto } from 'src/common/pagination and filter/dtos/pagination-query.dto';
-import { ShortlistedCandidateDto } from '../controller/dtos/create-shortlisted-candidates.dto';
+import { PaginationQueryDto } from 'src/common/pagination/dto/pagination-query.dto';
+import { ShortlistedCandidateDto } from '../controller/dto/create-shortlisted-candidates.dto';
 import { ShortlistedCandidatesRepository } from '../repositories/shortlisted-candidates.repository';
-import { DeleteQueryDto } from '../controller/dtos/delete-shortlisted-candidates.dto';
+import { DeleteQueryDto } from '../controller/dto/delete-shortlisted-candidates.dto';
 
 @Injectable()
 export class ShortlistedCandidatesService {
@@ -11,6 +11,12 @@ export class ShortlistedCandidatesService {
   ) {}
 
   async create(payload: ShortlistedCandidateDto) {
+    const existingCandidate = await this.candidatesRepository.getByEmail(
+      payload.applicant_email,
+    );
+    if (existingCandidate) {
+      payload.isDuplicated = true;
+    }
     return await this.candidatesRepository.create(payload);
   }
 
@@ -20,6 +26,26 @@ export class ShortlistedCandidatesService {
 
   async getById(id: string) {
     return await this.candidatesRepository.getbyId(id);
+  }
+
+  async getDashboardStats() {
+    return {
+      total_candidates: await this.candidatesRepository.count(),
+      total_rejected_candidates: await this.candidatesRepository.count(
+        'job_matched',
+        'No',
+        true
+      ),
+      total_accepted_candidates: await this.candidatesRepository.count(
+        'job_matched',
+        'Yes',
+        true
+      ),
+      total_duplicate_candidates: await this.candidatesRepository.count(
+        'isDuplicated',
+        'true',
+      ),
+    };
   }
   async deleteCandidate(payload: DeleteQueryDto) {
     const { id, deleteOption } = payload;

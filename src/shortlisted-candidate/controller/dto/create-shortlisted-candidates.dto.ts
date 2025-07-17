@@ -1,5 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNumber, IsArray, IsObject } from 'class-validator';
+import {
+  IsString,
+  IsNumber,
+  IsArray,
+  IsObject,
+  IsBoolean,
+  IsOptional,
+} from 'class-validator';
 
 export class ShortlistedCandidateDto {
   @ApiProperty({
@@ -74,7 +81,8 @@ export class ShortlistedCandidateDto {
 
   @ApiProperty({
     description: 'Summary',
-    example: 'Motivated professional who has a strong passion for using technology to create interesting digital experiences. Skilled in many different technologies, such as HTML, CSS, JavaScript, and others, and passionate about developing solutions that put the needs of users first. Eager to take on difficult challenges and offer creative solutions to support corporate goals. Looking for chances with innovative and creative firms that value creativity and innovation',
+    example:
+      'Motivated professional who has a strong passion for using technology to create interesting digital experiences. Skilled in many different technologies, such as HTML, CSS, JavaScript, and others, and passionate about developing solutions that put the needs of users first. Eager to take on difficult challenges and offer creative solutions to support corporate goals. Looking for chances with innovative and creative firms that value creativity and innovation',
     required: true,
   })
   @IsString()
@@ -95,4 +103,8 @@ export class ShortlistedCandidateDto {
   })
   @IsString()
   applicant_phone: string;
+
+  @IsBoolean()
+  @IsOptional()
+  isDuplicated: boolean;
 }
