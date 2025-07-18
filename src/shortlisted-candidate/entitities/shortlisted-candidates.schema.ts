@@ -42,8 +42,6 @@ export class ShortlistedCandidates extends Document {
   @Prop({ default: false })
   isDuplicated: boolean;
 
-  @Prop({ type: Date, default: null })
-  deletedAt: Date;
 }
 
 export const ShortlistedSchema = SchemaFactory.createForClass(

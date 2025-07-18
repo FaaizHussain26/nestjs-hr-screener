@@ -21,6 +21,7 @@ export class ShortlistedCandidatesService {
   }
 
   async getAll(query: PaginationQueryDto) {
+    await this.candidatesRepository.markDuplicates();
     return await this.candidatesRepository.findAll(query);
   }
 
@@ -34,12 +35,12 @@ export class ShortlistedCandidatesService {
       total_rejected_candidates: await this.candidatesRepository.count(
         'job_matched',
         'No',
-        true
+        true,
       ),
       total_accepted_candidates: await this.candidatesRepository.count(
         'job_matched',
         'Yes',
-        true
+        true,
       ),
       total_duplicate_candidates: await this.candidatesRepository.count(
         'isDuplicated',
