@@ -3,7 +3,10 @@ import { InjectModel } from '@nestjs/mongoose';
 import { DeleteResult, Model } from 'mongoose';
 import { ShortlistedCandidateDto } from '../controller/dto/create-shortlisted-candidates.dto';
 import { ShortlistedCandidates } from '../entitities/shortlisted-candidates.schema';
-import { PaginateAndFilter, PaginationOutput } from 'src/common/pagination/paginate-and-filter';
+import {
+  PaginateAndFilter,
+  PaginationOutput,
+} from 'src/common/pagination/paginate-and-filter';
 import { PaginationQueryDto } from 'src/common/pagination/dto/pagination-query.dto';
 
 @Injectable()
@@ -13,6 +16,40 @@ export class ShortlistedCandidatesRepository {
     private readonly candidateModel: Model<ShortlistedCandidates>,
   ) {}
 
+
+    async markDuplicates() {
+    const duplicates = await this.candidateModel.aggregate([
+      {
+        $group: {
+          _id: '$applicant_email',
+          count: { $sum: 1 },
+          ids: { $push: '$_id' },
+        },
+      },
+      {
+        $match: {
+          count: { $gt: 1 },
+        },
+      },
+    ]);
+
+    for (const dup of duplicates) {
+      const [keepId, ...duplicateIds] = dup.ids;
+
+
+      await this.candidateModel.updateMany(
+        { _id: { $in: duplicateIds } },
+        { $set: { isDuplicated: true } },
+      );
+
+      await this.candidateModel.updateOne(
+        { _id: keepId },
+        { $set: { isDuplicated: false } },
+      );
+    }
+
+    return { message: 'Duplicate emails marked as deleted.' };
+  }
   async create(
     payload: ShortlistedCandidateDto,
   ): Promise<ShortlistedCandidates> {
@@ -20,7 +57,9 @@ export class ShortlistedCandidatesRepository {
     return await create.save();
   }
 
-  async findAll(query: PaginationQueryDto): Promise<PaginationOutput<ShortlistedCandidates>> {
+  async findAll(
+    query: PaginationQueryDto,
+  ): Promise<PaginationOutput<ShortlistedCandidates>> {
     const result = await PaginateAndFilter<ShortlistedCandidates>(
       this.candidateModel,
       query,
@@ -35,15 +74,20 @@ export class ShortlistedCandidatesRepository {
     return await this.candidateModel.findById(id).exec();
   }
 
-  async count(fieldName?: string, fieldValue?: string ,useRegex:boolean=false) {
-    const filter =  fieldName && fieldValue
-      ? {
-          [fieldName]: useRegex ? new RegExp(`^${fieldValue}$`, 'i') : fieldValue,
-        }
-      : {};
-    return await this.candidateModel
-      .countDocuments(filter)
-      .exec();
+  async count(
+    fieldName?: string,
+    fieldValue?: string,
+    useRegex: boolean = false,
+  ) {
+    const filter =
+      fieldName && fieldValue
+        ? {
+            [fieldName]: useRegex
+              ? new RegExp(`^${fieldValue}$`, 'i')
+              : fieldValue,
+          }
+        : {};
+    return await this.candidateModel.countDocuments(filter).exec();
   }
   async update(
     id: string,
