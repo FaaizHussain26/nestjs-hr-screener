@@ -7,6 +7,7 @@ import {
   HttpStatus,
   Param,
   Post,
+  Put,
   Query,
   UseGuards,
 } from '@nestjs/common';
@@ -54,5 +55,11 @@ export class ShortlistedCandidatesController {
   @UseGuards(JwtAuthGuard)
   deleteCandidate(@Query() payload: DeleteQueryDto) {
     return this.candidatesService.deleteCandidate(payload);
+  }
+  @HttpCode(HttpStatus.OK)
+  @Put('restore/:id')
+  @UseGuards(JwtAuthGuard)
+  restoreCandidate(@Param('id') id: string) {
+    return this.candidatesService.restoreCandidate(id);
   }
 }
