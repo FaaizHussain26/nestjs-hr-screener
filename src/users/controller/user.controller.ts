@@ -27,13 +27,13 @@ import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { User } from '../entitities/user.schema';
 import { AuthUser } from 'src/common/decorator/auth.decorator';
 
-@Controller('users')
+@Controller('')
 @ApiBearerAuth()
 @ApiTags('Users')
 export class UserController {
   constructor(private readonly userservice: UserService) {}
 
-  @Get()
+  @Get('users')
   @UseGuards(JwtAuthGuard)
   async getAll(
     @Query('page') page?: number,
@@ -54,25 +54,25 @@ export class UserController {
     });
   }
 
-  @Get(':id')
+  @Get('users/:id')
   @UseGuards(JwtAuthGuard)
   async getById(@Param('id') id: string) {
     return await this.userservice.getById(id);
   }
 
-  @Post()
+  @Post('users')
   @UseGuards(JwtAuthGuard)
   async create(@Body() dto: CreateUserDto) {
     return await this.userservice.create(dto);
   }
 
-  @Patch(':id')
+  @Patch('users/:id')
   @UseGuards(JwtAuthGuard)
   async update(@Param('id') id: string, @Body() dto: UpdateUserDto) {
     return await this.userservice.update(id, dto);
   }
 
-  @Delete(':id')
+  @Delete('users/:id')
   @UseGuards(JwtAuthGuard)
   async delete(@Param('id') id: string) {
     return await this.userservice.delete(id);
