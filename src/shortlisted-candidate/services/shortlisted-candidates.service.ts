@@ -29,6 +29,7 @@ export class ShortlistedCandidatesService {
     return await this.candidatesRepository.getbyId(id);
   }
 
+
   async getDashboardStats() {
     return {
       total_candidates: await this.candidatesRepository.count(),

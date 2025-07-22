@@ -1,15 +1,19 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
   Param,
+  Patch,
   Post,
   Put,
   Query,
   UseGuards,
 } from '@nestjs/common';
+import { CreateUserDto } from '../dto/create-user.dto';
+import { UpdateUserDto } from '../dto/update-user.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 import { UserService } from '../services/user.service';
@@ -23,11 +27,56 @@ import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { User } from '../entitities/user.schema';
 import { AuthUser } from 'src/common/decorator/auth.decorator';
 
-@Controller('auth')
+@Controller('users')
 @ApiBearerAuth()
-@ApiTags('Authentication')
+@ApiTags('Users')
 export class UserController {
   constructor(private readonly userservice: UserService) {}
+
+  @Get()
+  @UseGuards(JwtAuthGuard)
+  async getAll(
+    @Query('page') page?: number,
+    @Query('limit') limit?: number,
+    @Query('search') search?: string,
+    @Query('role') role?: string,
+    @Query('isActive') isActive?: boolean
+  ) {
+    const parsedPage = page ? Number(page) : 1;
+    const parsedLimit = limit ? Number(limit) : 10;
+    const parsedIsActive = typeof isActive === 'string' ? isActive === 'true' : undefined;
+    return await this.userservice.getAll({
+      page: parsedPage,
+      limit: parsedLimit,
+      search,
+      role,
+      isActive: parsedIsActive,
+    });
+  }
+
+  @Get(':id')
+  @UseGuards(JwtAuthGuard)
+  async getById(@Param('id') id: string) {
+    return await this.userservice.getById(id);
+  }
+
+  @Post()
+  @UseGuards(JwtAuthGuard)
+  async create(@Body() dto: CreateUserDto) {
+    return await this.userservice.create(dto);
+  }
+
+  @Patch(':id')
+  @UseGuards(JwtAuthGuard)
+  async update(@Param('id') id: string, @Body() dto: UpdateUserDto) {
+    return await this.userservice.update(id, dto);
+  }
+
+  @Delete(':id')
+  @UseGuards(JwtAuthGuard)
+  async delete(@Param('id') id: string) {
+    return await this.userservice.delete(id);
+  }
 
   @HttpCode(HttpStatus.CREATED)
   @Post('register')

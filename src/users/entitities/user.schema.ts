@@ -27,6 +27,9 @@ export class User extends Document {
   @Prop({ required: true, default: true })
   isActive: boolean;
 
+  @Prop({ required: true, enum: ['admin', 'user'], default: 'user' })
+  role: 'admin' | 'user';
+
   @Prop({ default: null })
   deletedAt: Date;
 }

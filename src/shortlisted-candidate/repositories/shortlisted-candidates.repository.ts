@@ -57,6 +57,21 @@ export class ShortlistedCandidatesRepository {
     return await create.save();
   }
 
+  async find() {
+    return await this.candidateModel.find().exec();
+  }
+
+  /**
+   * Finds candidates with filter, sort, and limit, returns lean array.
+   */
+  async findSortedLimited(
+    filter: Record<string, any> = {},
+    sort: Record<string, any> = {},
+    limit: number = 0
+  ) {
+    return await this.candidateModel.find(filter).sort(sort).limit(limit).lean().exec();
+  }
+
   async findAll(
     query: PaginationQueryDto,
   ): Promise<PaginationOutput<ShortlistedCandidates>> {
@@ -89,6 +104,14 @@ export class ShortlistedCandidatesRepository {
         : {};
     return await this.candidateModel.countDocuments(filter).exec();
   }
+
+  /**
+   * Counts documents using a filter object (MongoDB style)
+   */
+  async countByFilter(filter: Record<string, any>) {
+    return await this.candidateModel.countDocuments(filter).exec();
+  }
+
   async update(
     id: string,
     candidate: Partial<ShortlistedCandidates>,
