@@ -22,6 +22,7 @@ export class ShortlistedCandidatesService {
 
   async getAll(query: PaginationQueryDto) {
     await this.candidatesRepository.markDuplicates();
+    console.log(query)
     return await this.candidatesRepository.findAll(query);
   }
 
@@ -79,6 +80,29 @@ export class ShortlistedCandidatesService {
           message: `Candidate with ID ${id} must be soft deleted before this operation`,
         };
       }
+    }
+  }
+
+  async restoreCandidate(id: string) {
+    const candidate = await this.candidatesRepository.getbyId(id);
+    if (!candidate) {
+      return { success: false, message: `Candidate with id = ${id} not found` };
+    }
+    if (candidate.isDeleted === true) {
+      candidate.isDeleted = false;
+      const candidateSoftDelete = await this.candidatesRepository.update(
+        id,
+        candidate,
+      );
+      return {
+        success: true,
+        message: `Candidate with ID ${id} has been successfully restored`,
+      };
+    } else {
+      return {
+        success: false,
+        message: `Candidate with ID ${id} has not been deleted`,
+      };
     }
   }
 }
