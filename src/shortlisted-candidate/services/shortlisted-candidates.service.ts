@@ -22,7 +22,6 @@ export class ShortlistedCandidatesService {
 
   async getAll(query: PaginationQueryDto) {
     await this.candidatesRepository.markDuplicates();
-    console.log(query)
     return await this.candidatesRepository.findAll(query);
   }
 

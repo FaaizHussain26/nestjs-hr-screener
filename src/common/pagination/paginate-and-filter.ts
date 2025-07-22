@@ -40,22 +40,14 @@ export async function PaginateAndFilter<T>(
     }
   }
 
-  console.log(isDelete);
 
   if (isDelete === false) {
     filters.$or = [{ isDeleted: false }, { isDeleted: { $exists: false } }];
   } else if (isDelete !== undefined) {
-    filters.isDeleted = isDelete; // true or other specific value
+    filters.isDeleted = isDelete;
   }
 
-  console.log(filters);
 
-  // if (isDelete !== undefined) {
-  //   filters.isDelete = isDelete == true;
-  //   console.log(filters)
-  // } else if (filters.isDelete === undefined) {
-  //   filters.isDelete = false;
-  // }
 
   if (search && searchableFields.length > 0) {
     filters.$or = searchableFields.map((field) => ({
@@ -63,7 +55,6 @@ export async function PaginateAndFilter<T>(
     }));
   }
 
-  console.log(`filter ${filters}`);
   const dbQuery = model.find(filters).sort(sort).skip(skip).limit(limit);
 
   const [items, total] = await Promise.all([
