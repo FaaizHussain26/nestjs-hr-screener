@@ -79,37 +79,37 @@ export class UserController {
   }
 
   @HttpCode(HttpStatus.CREATED)
-  @Post('register')
+  @Post('auth/register')
   async register(@Body() payload: RegistrationUserDto) {
     return await this.userservice.registration(payload);
   }
 
   @HttpCode(HttpStatus.OK)
-  @Post('login')
+  @Post('auth/login')
   async login(@Body() payload: LoginUserDto) {
     return await this.userservice.login(payload);
   }
 
   @HttpCode(HttpStatus.OK)
-  @Post('forgot-password')
+  @Post('auth/forgot-password')
   async forgotPassword(@Body() payload: ForgotPasswordDto) {
     return await this.userservice.forgotPassword(payload.email);
   }
 
   @HttpCode(HttpStatus.OK)
-  @Get('verify-reset-token')
+  @Get('auth/verify-reset-token')
   async verifyResetToken(@Query('token') token: string) {
     return await this.userservice.verifyForgotPasswordToken(token);
   }
 
   @HttpCode(HttpStatus.OK)
-  @Post('reset-password')
+  @Post('auth/reset-password')
   async resetPassword(@Body() payload: ResetPasswordDto) {
     return await this.userservice.resetPassword(payload);
   }
 
   @HttpCode(HttpStatus.OK)
-  @Put('update-profile')
+  @Put('auth/update-profile')
   @UseGuards(JwtAuthGuard)
   async updateprofile(
     @AuthUser() user: User,
@@ -119,7 +119,7 @@ export class UserController {
   }
 
   @HttpCode(HttpStatus.OK)
-  @Put('update-password/')
+  @Put('auth/update-password')
   @UseGuards(JwtAuthGuard)
   async updatePassword(
     @Param('id') id: string,
