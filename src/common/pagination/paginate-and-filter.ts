@@ -21,6 +21,7 @@ export async function PaginateAndFilter<T>(
     sortOrder = 'desc',
     filter,
     search,
+    isDelete,
   } = query;
 
   const skip = (page - 1) * limit;
@@ -38,6 +39,15 @@ export async function PaginateAndFilter<T>(
       throw new Error('Invalid filter format');
     }
   }
+
+
+  if (isDelete === false) {
+    filters.$or = [{ isDeleted: false }, { isDeleted: { $exists: false } }];
+  } else if (isDelete !== undefined) {
+    filters.isDeleted = isDelete;
+  }
+
+
 
   if (search && searchableFields.length > 0) {
     filters.$or = searchableFields.map((field) => ({

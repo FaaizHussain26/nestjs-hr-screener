@@ -1,5 +1,12 @@
-import { IsOptional, IsPositive, IsString, Min } from 'class-validator';
-import { Type } from 'class-transformer';
+import {
+  IsBoolean,
+  IsBooleanString,
+  IsOptional,
+  IsPositive,
+  IsString,
+  Min,
+} from 'class-validator';
+import { Transform, Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class PaginationQueryDto {
@@ -24,6 +31,7 @@ export class PaginationQueryDto {
   page?: number;
 
   @IsOptional()
+  @IsString()
   @ApiProperty({
     description: 'The field by which to sort the results.',
     example: 'createdAt',
@@ -48,8 +56,8 @@ export class PaginationQueryDto {
   })
   filter?: string;
 
-   @IsOptional()
-   @IsString()
+  @IsOptional()
+  @IsString()
   @ApiProperty({
     description: 'String',
     example: 'John',
@@ -57,4 +65,15 @@ export class PaginationQueryDto {
   })
   search?: string;
 
+  @IsOptional()
+  @Transform(({ value }) =>
+    value === 'true' ? true : value === 'false' ? false : undefined,
+  )
+  @IsBoolean()
+  @ApiProperty({
+    description: 'Select for isActive and isDeleted',
+    type: 'boolean',
+    required: false,
+  })
+  isDelete?: boolean;
 }
