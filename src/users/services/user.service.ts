@@ -16,6 +16,8 @@ import { UpdateProfileDto } from '../controller/dto/update-user-profile.dto';
 import { Types } from 'mongoose';
 import { UpdatePasswordDto } from '../controller/dto/update-password.dto';
 import { User } from '../entitities/user.schema';
+import { CreateUserDto } from '../dto/create-user.dto';
+import { UpdateUserDto } from '../dto/update-user.dto';
 
 @Injectable()
 export class UserService {
@@ -25,6 +27,22 @@ export class UserService {
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
   ) {}
+
+  async getAll(query: { page?: number; limit?: number; search?: string; role?: string; isActive?: boolean }) {
+    return await this.userrepo.findAllPaginatedAndFiltered(query);
+  }
+  async getById(id: string) {
+    return await this.userrepo.getbyId(id);
+  }
+  async create(dto: CreateUserDto) {
+    return await this.userrepo.create(dto);
+  }
+  async update(id: string, dto: UpdateUserDto) {
+    return await this.userrepo.update(id, dto);
+  }
+  async delete(id: string) {
+    return await this.userrepo.delete(id);
+  }
 
   async registration(payload: RegistrationUserDto) {
     try {

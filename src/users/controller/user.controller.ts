@@ -1,15 +1,19 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
   Param,
+  Patch,
   Post,
   Put,
   Query,
   UseGuards,
 } from '@nestjs/common';
+import { CreateUserDto } from '../dto/create-user.dto';
+import { UpdateUserDto } from '../dto/update-user.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 import { UserService } from '../services/user.service';
@@ -23,44 +27,89 @@ import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { User } from '../entitities/user.schema';
 import { AuthUser } from 'src/common/decorator/auth.decorator';
 
-@Controller('auth')
+@Controller('')
 @ApiBearerAuth()
-@ApiTags('Authentication')
+@ApiTags('Users')
 export class UserController {
   constructor(private readonly userservice: UserService) {}
 
+  @Get('users')
+  @UseGuards(JwtAuthGuard)
+  async getAll(
+    @Query('page') page?: number,
+    @Query('limit') limit?: number,
+    @Query('search') search?: string,
+    @Query('role') role?: string,
+    @Query('isActive') isActive?: boolean
+  ) {
+    const parsedPage = page ? Number(page) : 1;
+    const parsedLimit = limit ? Number(limit) : 10;
+    const parsedIsActive = typeof isActive === 'string' ? isActive === 'true' : undefined;
+    return await this.userservice.getAll({
+      page: parsedPage,
+      limit: parsedLimit,
+      search,
+      role,
+      isActive: parsedIsActive,
+    });
+  }
+
+  @Get('users/:id')
+  @UseGuards(JwtAuthGuard)
+  async getById(@Param('id') id: string) {
+    return await this.userservice.getById(id);
+  }
+
+  @Post('users')
+  @UseGuards(JwtAuthGuard)
+  async create(@Body() dto: CreateUserDto) {
+    return await this.userservice.create(dto);
+  }
+
+  @Patch('users/:id')
+  @UseGuards(JwtAuthGuard)
+  async update(@Param('id') id: string, @Body() dto: UpdateUserDto) {
+    return await this.userservice.update(id, dto);
+  }
+
+  @Delete('users/:id')
+  @UseGuards(JwtAuthGuard)
+  async delete(@Param('id') id: string) {
+    return await this.userservice.delete(id);
+  }
+
   @HttpCode(HttpStatus.CREATED)
-  @Post('register')
+  @Post('auth/register')
   async register(@Body() payload: RegistrationUserDto) {
     return await this.userservice.registration(payload);
   }
 
   @HttpCode(HttpStatus.OK)
-  @Post('login')
+  @Post('auth/login')
   async login(@Body() payload: LoginUserDto) {
     return await this.userservice.login(payload);
   }
 
   @HttpCode(HttpStatus.OK)
-  @Post('forgot-password')
+  @Post('auth/forgot-password')
   async forgotPassword(@Body() payload: ForgotPasswordDto) {
     return await this.userservice.forgotPassword(payload.email);
   }
 
   @HttpCode(HttpStatus.OK)
-  @Get('verify-reset-token')
+  @Get('auth/verify-reset-token')
   async verifyResetToken(@Query('token') token: string) {
     return await this.userservice.verifyForgotPasswordToken(token);
   }
 
   @HttpCode(HttpStatus.OK)
-  @Post('reset-password')
+  @Post('auth/reset-password')
   async resetPassword(@Body() payload: ResetPasswordDto) {
     return await this.userservice.resetPassword(payload);
   }
 
   @HttpCode(HttpStatus.OK)
-  @Put('update-profile')
+  @Put('auth/update-profile')
   @UseGuards(JwtAuthGuard)
   async updateprofile(
     @AuthUser() user: User,
@@ -70,7 +119,7 @@ export class UserController {
   }
 
   @HttpCode(HttpStatus.OK)
-  @Put('update-password/')
+  @Put('auth/update-password')
   @UseGuards(JwtAuthGuard)
   async updatePassword(
     @Param('id') id: string,
