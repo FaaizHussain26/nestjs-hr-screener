@@ -7,6 +7,7 @@ import { AppMailerModule } from './common/mails/mailer/email.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ShortlistedCandidatesModule } from './shortlisted-candidate/shortlisted-candidates.module';
 import { AuthModule } from './auth/auth.module';
+import { JobsModule } from './jobs/jobs.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { AuthModule } from './auth/auth.module';
     UsersModule,
     AppMailerModule,
     ShortlistedCandidatesModule,
+    JobsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
