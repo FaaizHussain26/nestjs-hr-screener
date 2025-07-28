@@ -17,6 +17,12 @@ export class Job extends Document {
 
   @Prop({ type: [String], default: [] })
   skills: string[];
+
+  @Prop({ default: true })
+  isActive: boolean;
+
+  @Prop({ default: false })
+  isDeleted: boolean;
 }
 
 export const JobSchema = SchemaFactory.createForClass(Job);

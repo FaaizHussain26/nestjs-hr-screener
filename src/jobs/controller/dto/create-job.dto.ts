@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNotEmpty, IsOptional, IsArray } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional, IsArray, IsBoolean } from 'class-validator';
 
 export class CreateJobDto {
   @IsString()
@@ -48,4 +48,12 @@ export class CreateJobDto {
     required: true,
   })
   skills: string[];
+
+  @IsBoolean()
+  @ApiProperty({
+    description: 'Check the job is active or not',
+    example:true,
+    required: true,
+  })
+  isActive: boolean;
 }
