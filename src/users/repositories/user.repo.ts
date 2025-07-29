@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { User } from '../entitities/user.schema';
+import { User } from '../entities/user.schema';
 
 @Injectable()
 export class UserRepository {
@@ -24,14 +24,20 @@ export class UserRepository {
     limit = 10,
     search = '',
     role,
-    isActive
-  }: { page?: number; limit?: number; search?: string; role?: string; isActive?: boolean }) {
+    isActive,
+  }: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    role?: string;
+    isActive?: boolean;
+  }) {
     const filter: any = {};
     if (search) {
       filter.$or = [
         { firstName: { $regex: search, $options: 'i' } },
         { lastName: { $regex: search, $options: 'i' } },
-        { email: { $regex: search, $options: 'i' } }
+        { email: { $regex: search, $options: 'i' } },
       ];
     }
     if (role) filter.role = role;
@@ -39,14 +45,14 @@ export class UserRepository {
     const skip = (page - 1) * limit;
     const [results, total] = await Promise.all([
       this.userModel.find(filter).skip(skip).limit(limit).exec(),
-      this.userModel.countDocuments(filter)
+      this.userModel.countDocuments(filter),
     ]);
     return {
       results,
       total,
       page,
       limit,
-      totalPages: Math.ceil(total / limit)
+      totalPages: Math.ceil(total / limit),
     };
   }
   async getbyId(id: string): Promise<User | null> {

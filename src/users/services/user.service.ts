@@ -15,7 +15,7 @@ import { RegistrationUserDto } from '../controller/dto/registration-user.dto';
 import { UpdateProfileDto } from '../controller/dto/update-user-profile.dto';
 import { Types } from 'mongoose';
 import { UpdatePasswordDto } from '../controller/dto/update-password.dto';
-import { User } from '../entitities/user.schema';
+import { User } from '../entities/user.schema';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 
@@ -28,7 +28,13 @@ export class UserService {
     private readonly configService: ConfigService,
   ) {}
 
-  async getAll(query: { page?: number; limit?: number; search?: string; role?: string; isActive?: boolean }) {
+  async getAll(query: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    role?: string;
+    isActive?: boolean;
+  }) {
     return await this.userrepo.findAllPaginatedAndFiltered(query);
   }
   async getById(id: string) {

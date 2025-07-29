@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Job } from '../entitities/job.schema';
+import { Job } from '../entities/job.schema';
 import { CreateJobDto } from '../controller/dto/create-job.dto';
 import { UpdateJobDto } from '../controller/dto/update-job.dto';
 import { technicalSkills } from '../skills';

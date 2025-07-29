@@ -1,15 +1,13 @@
 import { Model } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Job } from '../entitities/job.schema';
+import { Job } from '../entities/job.schema';
 import { CreateJobDto } from '../controller/dto/create-job.dto';
 import { UpdateJobDto } from '../controller/dto/update-job.dto';
 
 @Injectable()
 export class JobRepository {
-  constructor(
-    @InjectModel(Job.name) private readonly jobModel: Model<Job>,
-  ) {}
+  constructor(@InjectModel(Job.name) private readonly jobModel: Model<Job>) {}
 
   async create(createJobDto: CreateJobDto): Promise<Job> {
     const createdJob = new this.jobModel(createJobDto);
@@ -25,7 +23,9 @@ export class JobRepository {
   }
 
   async update(id: string, updateJobDto: UpdateJobDto): Promise<Job | null> {
-    return this.jobModel.findByIdAndUpdate(id, updateJobDto, { new: true }).exec();
+    return this.jobModel
+      .findByIdAndUpdate(id, updateJobDto, { new: true })
+      .exec();
   }
 
   async delete(id: string): Promise<{ deleted: boolean }> {
