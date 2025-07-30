@@ -8,6 +8,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ShortlistedCandidatesModule } from './shortlisted-candidate/shortlisted-candidates.module';
 import { AuthModule } from './auth/auth.module';
 import { JobsModule } from './jobs/jobs.module';
+import { SkillModule } from './skills/skill.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { JobsModule } from './jobs/jobs.module';
     AppMailerModule,
     ShortlistedCandidatesModule,
     JobsModule,
+    SkillModule,
   ],
   controllers: [AppController],
   providers: [AppService],
