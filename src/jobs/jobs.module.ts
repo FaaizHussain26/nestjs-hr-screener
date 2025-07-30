@@ -4,10 +4,11 @@ import { JobController } from './controller/job.controller';
 import { Job, JobSchema } from './entities/job.schema';
 import { JobService } from './services/job.service';
 import { JobRepository } from './repositories/job.repository';
+import { JwtService } from '@nestjs/jwt';
 
 @Module({
   imports: [MongooseModule.forFeature([{ name: Job.name, schema: JobSchema }])],
   controllers: [JobController],
-  providers: [JobService, JobRepository],
+  providers: [JobService, JobRepository,JwtService],
 })
 export class JobsModule {}

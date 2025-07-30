@@ -4,6 +4,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Job } from '../entities/job.schema';
 import { CreateJobDto } from '../controller/dto/create-job.dto';
 import { UpdateJobDto } from '../controller/dto/update-job.dto';
+import { PaginateAndFilter, PaginationOutput } from 'src/common/pagination/paginate-and-filter';
+import { PaginationQueryDto } from 'src/common/pagination/dto/pagination-query.dto';
 
 @Injectable()
 export class JobRepository {
@@ -14,8 +16,14 @@ export class JobRepository {
     return createdJob.save();
   }
 
-  async findAll(): Promise<Job[]> {
-    return this.jobModel.find().exec();
+  async findAll( query: PaginationQueryDto):Promise<PaginationOutput<Job>>{
+    
+    const result = await PaginateAndFilter<Job>(
+          this.jobModel,
+          query,
+          ['title'],
+        );
+        return result;
   }
 
   async findById(id: string): Promise<Job | null> {
