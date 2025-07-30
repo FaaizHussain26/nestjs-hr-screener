@@ -5,7 +5,7 @@ import { DashboardController } from './controller/dashboard.controller';
 import {
   ShortlistedCandidates,
   ShortlistedSchema,
-} from './entitities/shortlisted-candidates.schema';
+} from './entities/shortlisted-candidates.schema';
 import { ShortlistedCandidatesRepository } from './repositories/shortlisted-candidates.repository';
 import { ShortlistedCandidatesService } from './services/shortlisted-candidates.service';
 import { DashboardService } from './services/dashboard.service';
@@ -18,6 +18,11 @@ import { JwtService } from '@nestjs/jwt';
     ]),
   ],
   controllers: [ShortlistedCandidatesController, DashboardController],
-  providers: [ShortlistedCandidatesService, ShortlistedCandidatesRepository, DashboardService, JwtService],
+  providers: [
+    ShortlistedCandidatesService,
+    ShortlistedCandidatesRepository,
+    DashboardService,
+    JwtService,
+  ],
 })
 export class ShortlistedCandidatesModule {}

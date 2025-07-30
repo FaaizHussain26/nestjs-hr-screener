@@ -1,28 +1,21 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { Job } from '../entitities/job.schema';
+import { PaginationQueryDto } from 'src/common/pagination/dto/pagination-query.dto';
+import { DeleteQueryDto } from 'src/shortlisted-candidate/controller/dto/delete-shortlisted-candidates.dto';
 import { CreateJobDto } from '../controller/dto/create-job.dto';
 import { UpdateJobDto } from '../controller/dto/update-job.dto';
-import { technicalSkills } from '../skills';
 import { JobRepository } from '../repositories/job.repository';
-import { DeleteQueryDto } from 'src/shortlisted-candidate/controller/dto/delete-shortlisted-candidates.dto';
 
 @Injectable()
 export class JobService {
   constructor(private readonly jobRepository: JobRepository) {}
-
-  async getSkills() {
-    return await technicalSkills;
-  }
 
   async create(createJobDto: CreateJobDto) {
     const createdJob = await this.jobRepository.create(createJobDto);
     return createdJob;
   }
 
-  async findAll() {
-    return await this.jobRepository.findAll();
+  async findAll(query: PaginationQueryDto) {
+    return await this.jobRepository.findAll(query);
   }
 
   async findOne(id: string) {

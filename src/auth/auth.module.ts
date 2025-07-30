@@ -5,7 +5,7 @@ import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { UserService } from 'src/users/services/user.service';
 import { UserRepository } from 'src/users/repositories/user.repo';
 import { MongooseModule } from '@nestjs/mongoose';
-import { User, UserSchema } from 'src/users/entitities/user.schema';
+import { User, UserSchema } from 'src/users/entities/user.schema';
 
 @Module({
   imports: [
@@ -24,4 +24,4 @@ import { User, UserSchema } from 'src/users/entitities/user.schema';
   providers: [JwtAuthGuard, UserService, UserRepository],
   exports: [JwtModule, JwtAuthGuard],
 })
-export class AuthModule {} 
+export class AuthModule {}

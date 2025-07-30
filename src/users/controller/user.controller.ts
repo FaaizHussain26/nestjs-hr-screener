@@ -24,7 +24,7 @@ import { ResetPasswordDto } from './dto/reset-password.dto';
 import { UpdateProfileDto } from './dto/update-user-profile.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
-import { User } from '../entitities/user.schema';
+import { User } from '../entities/user.schema';
 import { AuthUser } from 'src/common/decorator/auth.decorator';
 
 @Controller('')
@@ -40,11 +40,12 @@ export class UserController {
     @Query('limit') limit?: number,
     @Query('search') search?: string,
     @Query('role') role?: string,
-    @Query('isActive') isActive?: boolean
+    @Query('isActive') isActive?: boolean,
   ) {
     const parsedPage = page ? Number(page) : 1;
     const parsedLimit = limit ? Number(limit) : 10;
-    const parsedIsActive = typeof isActive === 'string' ? isActive === 'true' : undefined;
+    const parsedIsActive =
+      typeof isActive === 'string' ? isActive === 'true' : undefined;
     return await this.userservice.getAll({
       page: parsedPage,
       limit: parsedLimit,
