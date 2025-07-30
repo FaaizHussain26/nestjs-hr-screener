@@ -17,8 +17,11 @@ import { DeleteQueryDto } from 'src/shortlisted-candidate/controller/dto/delete-
 import { JobService } from '../services/job.service';
 import { CreateJobDto } from './dto/create-job.dto';
 import { UpdateJobDto } from './dto/update-job.dto';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 @Controller('jobs')
+@ApiBearerAuth()
+@ApiTags('job')
 export class JobController {
   constructor(private readonly jobService: JobService) {}
 
@@ -55,7 +58,7 @@ export class JobController {
   }
   @HttpCode(HttpStatus.OK)
   @Put('restore/:id')
-   @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   restore(@Param('id') id: string) {
     return this.jobService.restore(id);
   }

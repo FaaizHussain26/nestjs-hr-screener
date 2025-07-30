@@ -5,7 +5,7 @@ export class CreateSkillDto {
   @ApiProperty({
     description: 'Add new skills',
     example: 'node.js',
-     required: true,
+    required: true,
   })
   @IsString()
   technical_skill: string;

@@ -21,17 +21,17 @@ export class SkillRepository {
   }
 
   async findById(id: string): Promise<Skill | null> {
-    return this.skillModel.findById(id).exec();
+    return await this.skillModel.findById(id).exec();
   }
   async findByName(name: string): Promise<Skill | null> {
-    return this.skillModel.findOne({ technical_skill: name }).exec();
+    return await this.skillModel.findOne({ technical_skill: name }).exec();
   }
 
   async update(
     id: string,
     updateSkillDto: UpdateSkillDto,
   ): Promise<Skill | null> {
-    return this.skillModel
+    return await this.skillModel
       .findByIdAndUpdate(id, updateSkillDto, { new: true })
       .exec();
   }

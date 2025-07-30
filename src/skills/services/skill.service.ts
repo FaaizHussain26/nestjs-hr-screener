@@ -1,7 +1,9 @@
+import { Injectable } from '@nestjs/common';
 import { CreateSkillDto } from '../controller/dto/create-skill.dto';
 import { UpdateSkillDto } from '../controller/dto/update-skill.dto';
 import { SkillRepository } from '../repositories/skill.repository';
 
+@Injectable()
 export class SkillService {
   constructor(private readonly skillRepository: SkillRepository) {}
 
@@ -20,15 +22,37 @@ export class SkillService {
   }
 
   async findById(id: string) {
-    return this.skillRepository.findById(id);
+    const skill = await this.skillRepository.findById(id);
+    if (!skill) {
+      return { success: false, message: 'Skill not found' };
+    }
+    return skill;
   }
 
-  async update(id: string, updateSkillDto: UpdateSkillDto) {
-    return this.skillRepository.update(id, updateSkillDto);
+  async update(id: string, payload: UpdateSkillDto) {
+    const duplicate = await this.skillRepository.findByName(
+      payload.technical_skill as string,
+    );
+
+    if (duplicate) {
+      return { success: false, message: 'Skill already exist' };
+    }
+
+    const updatedSkill = await this.skillRepository.update(id, payload);
+    if (!updatedSkill) {
+      return { success: false, message: 'Skill not found' };
+    }
+    return updatedSkill;
   }
 
-  async delete(id: string){
+  async delete(id: string) {
     const res = await this.skillRepository.delete(id);
-    return res;
+    if (res.deletedCount === 0) {
+      return { success: false, message: 'Skill not found' };
+    }
+    return {
+      success: true,
+      message: `Skill with ID ${id} has been permanently deleted`,
+    };
   }
 }

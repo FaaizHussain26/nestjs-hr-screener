@@ -20,13 +20,17 @@ export class JobService {
 
   async findOne(id: string) {
     const job = await this.jobRepository.findById(id);
-    if (!job) throw new NotFoundException('Job not found');
+    if (!job){
+      return { success: false, message: 'Job not found' };
+    }
     return job;
   }
 
   async update(id: string, updateJobDto: UpdateJobDto) {
     const job = await this.jobRepository.update(id, updateJobDto);
-    if (!job) throw new NotFoundException('Job not found');
+    if (!job) {
+      return { success: false, message: 'Job  not found' };
+    }
     return job;
   }
   async delete(payload: DeleteQueryDto) {
