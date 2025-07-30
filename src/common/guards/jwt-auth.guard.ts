@@ -7,8 +7,8 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { ConfigService } from '@nestjs/config';
-import { User } from 'src/users/entitities/user.schema';
-    
+import { User } from 'src/users/entities/user.schema';
+
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
   constructor(
@@ -23,7 +23,7 @@ export class JwtAuthGuard implements CanActivate {
     if (!token) {
       throw new UnauthorizedException('Access token is required');
     }
-    
+
     try {
       const payload = await this.jwtService.verifyAsync(token, {
         secret: this.configService.get<string>('JWT_SECRET'),
@@ -33,7 +33,7 @@ export class JwtAuthGuard implements CanActivate {
     } catch (error) {
       throw new UnauthorizedException('Invalid or expired token');
     }
-    
+
     return true;
   }
 
@@ -45,4 +45,4 @@ export class JwtAuthGuard implements CanActivate {
     const [type, token] = request.headers.authorization?.split(' ') ?? [];
     return type === 'Bearer' ? token : undefined;
   }
-} 
+}

@@ -4,7 +4,7 @@ import { UserService } from './services/user.service';
 import { MongooseModule } from '@nestjs/mongoose';
 
 import { EventEmitterModule } from '@nestjs/event-emitter';
-import { User, UserSchema } from './entitities/user.schema';
+import { User, UserSchema } from './entities/user.schema';
 import { UserRepository } from './repositories/user.repo';
 import { AuthModule } from '../auth/auth.module';
 

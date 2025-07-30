@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { DeleteResult, Model } from 'mongoose';
 import { ShortlistedCandidateDto } from '../controller/dto/create-shortlisted-candidates.dto';
-import { ShortlistedCandidates } from '../entitities/shortlisted-candidates.schema';
+import { ShortlistedCandidates } from '../entities/shortlisted-candidates.schema';
 import {
   PaginateAndFilter,
   PaginationOutput,
@@ -16,8 +16,7 @@ export class ShortlistedCandidatesRepository {
     private readonly candidateModel: Model<ShortlistedCandidates>,
   ) {}
 
-
-    async markDuplicates() {
+  async markDuplicates() {
     const duplicates = await this.candidateModel.aggregate([
       {
         $group: {
@@ -35,7 +34,6 @@ export class ShortlistedCandidatesRepository {
 
     for (const dup of duplicates) {
       const [keepId, ...duplicateIds] = dup.ids;
-
 
       await this.candidateModel.updateMany(
         { _id: { $in: duplicateIds } },
@@ -67,9 +65,14 @@ export class ShortlistedCandidatesRepository {
   async findSortedLimited(
     filter: Record<string, any> = {},
     sort: Record<string, any> = {},
-    limit: number = 0
+    limit: number = 0,
   ) {
-    return await this.candidateModel.find(filter).sort(sort).limit(limit).lean().exec();
+    return await this.candidateModel
+      .find(filter)
+      .sort(sort)
+      .limit(limit)
+      .lean()
+      .exec();
   }
 
   async findAll(
