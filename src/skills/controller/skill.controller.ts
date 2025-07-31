@@ -8,11 +8,18 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { SkillService } from '../services/skill.service';
 import { CreateSkillDto } from './dto/create-skill.dto';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiProperty,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 
 @Controller('skills')
@@ -23,9 +30,14 @@ export class SkillController {
 
   @Get('/')
   @UseGuards(JwtAuthGuard)
+  @ApiQuery({
+    name: 'search',
+    required: false,
+    description: 'Search by technical skill (case-insensitive)',
+  })
   @HttpCode(HttpStatus.OK)
-  findAll() {
-    return this.skillService.findAll();
+  findAll(@Query('search') search?: string) {
+    return this.skillService.findAll(search);
   }
 
   @Get('/:id')
