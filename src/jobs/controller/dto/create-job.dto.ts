@@ -50,6 +50,7 @@ export class CreateJobDto {
   skills: string[];
 
   @IsBoolean()
+  @IsOptional()
   @ApiProperty({
     description: 'Check the job is active or not',
     example:true,
