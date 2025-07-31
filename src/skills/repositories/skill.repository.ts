@@ -16,8 +16,13 @@ export class SkillRepository {
     return await create.save();
   }
 
-  async findAll(): Promise<Skill[]> {
-    return await this.skillModel.find();
+  async findAll(filter: { search?: string }): Promise<Skill[]> {
+    const query: any = {};
+    if (filter?.search) {
+      query.technical_skill = { $regex: filter.search, $options: 'i' };
+    }
+
+    return await this.skillModel.find(query).exec();
   }
 
   async findById(id: string): Promise<Skill | null> {

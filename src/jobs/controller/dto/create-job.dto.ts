@@ -53,7 +53,7 @@ export class CreateJobDto {
   @ApiProperty({
     description: 'Check the job is active or not',
     example:true,
-    required: true,
+    required: false,
   })
   isActive: boolean;
 }

@@ -17,8 +17,8 @@ export class SkillService {
     return await this.skillRepository.create(payload);
   }
 
-  async findAll() {
-    return await this.skillRepository.findAll();
+  async findAll(search?: string) {
+    return await this.skillRepository.findAll({ search });
   }
 
   async findById(id: string) {
