@@ -9,6 +9,7 @@ import { ShortlistedCandidatesModule } from './shortlisted-candidate/shortlisted
 import { AuthModule } from './auth/auth.module';
 import { JobsModule } from './jobs/jobs.module';
 import { SkillModule } from './skills/skill.module';
+import { ResumeAnalyzerModule } from './resume-analyzer/resume-analyzer.module';
 
 @Module({
   imports: [
@@ -25,7 +26,7 @@ import { SkillModule } from './skills/skill.module';
         if (!uri) {
           throw new Error('MONGO_URI is not defined in .env');
         }
-        Logger.log('MongoDB connected',uri);
+        Logger.log('MongoDB connected', uri);
         return {
           uri,
           dbName: configService.get<string>('MONGO_DB_NAME'),
@@ -39,6 +40,7 @@ import { SkillModule } from './skills/skill.module';
     ShortlistedCandidatesModule,
     JobsModule,
     SkillModule,
+    ResumeAnalyzerModule,
   ],
   controllers: [AppController],
   providers: [AppService],
