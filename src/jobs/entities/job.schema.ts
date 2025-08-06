@@ -23,6 +23,38 @@ export class Job extends Document {
 
   @Prop({ default: false })
   isDeleted: boolean;
+
+  @Prop({
+    type: [Number],
+    index: false
+  })
+  titleVector?: number[];
+
+  @Prop({
+    type: [Number],
+    index: false
+  })
+  descriptionVector?: number[];
+
+  @Prop({
+    type: [Number],
+    index: false
+  })
+  skillsVector?: number[];
+
+  @Prop({
+    type: [Number],
+    index: false
+  })
+  combinedVector?: number[];
+
+  @Prop({ type: Object, default: {} })
+  vectorMetadata?: {
+    model?: string;
+    lastUpdated?: Date;
+    dimensions?: number;
+    [key: string]: any;
+  };
 }
 
 export const JobSchema = SchemaFactory.createForClass(Job);

@@ -9,21 +9,20 @@ import { PaginationQueryDto } from 'src/common/pagination/dto/pagination-query.d
 
 @Injectable()
 export class JobRepository {
-  constructor(@InjectModel(Job.name) private readonly jobModel: Model<Job>) {}
+  constructor(@InjectModel(Job.name) private readonly jobModel: Model<Job>) { }
 
   async create(createJobDto: CreateJobDto): Promise<Job> {
     const createdJob = new this.jobModel(createJobDto);
     return createdJob.save();
   }
 
-  async findAll( query: PaginationQueryDto):Promise<PaginationOutput<Job>>{
-    
+  async findAll(query: PaginationQueryDto): Promise<PaginationOutput<Job>> {
     const result = await PaginateAndFilter<Job>(
-          this.jobModel,
-          query,
-          ['title'],
-        );
-        return result;
+      this.jobModel,
+      query,
+      ['title'],
+    );
+    return result;
   }
 
   async findById(id: string): Promise<Job | null> {
@@ -39,5 +38,9 @@ export class JobRepository {
   async delete(id: string): Promise<{ deleted: boolean }> {
     const res = await this.jobModel.deleteOne({ _id: id }).exec();
     return { deleted: res.deletedCount > 0 };
+  }
+
+  async aggregate(pipeline: any[]): Promise<any[]> {
+    return this.jobModel.aggregate(pipeline).exec();
   }
 }
