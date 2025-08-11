@@ -4,13 +4,27 @@ import { DeleteQueryDto } from 'src/shortlisted-candidate/controller/dto/delete-
 import { CreateJobDto } from '../controller/dto/create-job.dto';
 import { UpdateJobDto } from '../controller/dto/update-job.dto';
 import { JobRepository } from '../repositories/job.repository';
+import { EmbeddingService } from 'src/common/embeddings/embedding.service';
 
 @Injectable()
 export class JobService {
-  constructor(private readonly jobRepository: JobRepository) {}
+  constructor(
+    private readonly jobRepository: JobRepository,
+    private readonly embeddingService: EmbeddingService,
+  ) {}
 
   async create(createJobDto: CreateJobDto) {
-    const createdJob = await this.jobRepository.create(createJobDto);
+    const embedding = await this.embeddingService.generateEmbeddingFromJob({
+      title: createJobDto.title,
+      experience: createJobDto.experience,
+      summary: createJobDto.summary,
+      description: createJobDto.description,
+      skills: createJobDto.skills,
+    });
+    const createdJob = await this.jobRepository.create({
+      ...createJobDto,
+      ...(embedding ? { embedding } : {}),
+    });
     return createdJob;
   }
 
@@ -27,7 +41,17 @@ export class JobService {
   }
 
   async update(id: string, updateJobDto: UpdateJobDto) {
-    const job = await this.jobRepository.update(id, updateJobDto);
+    const embedding = await this.embeddingService.generateEmbeddingFromJob({
+      title: updateJobDto.title ?? '',
+      experience: updateJobDto.experience ?? '',
+      summary: updateJobDto.summary,
+      description: updateJobDto.description ?? '',
+      skills: updateJobDto.skills,
+    });
+    const job = await this.jobRepository.update(id, {
+      ...updateJobDto,
+      ...(embedding ? { embedding } : {}),
+    });
     if (!job) {
       return { success: false, message: 'Job  not found' };
     }

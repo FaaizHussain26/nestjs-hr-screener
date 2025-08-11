@@ -11,7 +11,7 @@ import { PaginationQueryDto } from 'src/common/pagination/dto/pagination-query.d
 export class JobRepository {
   constructor(@InjectModel(Job.name) private readonly jobModel: Model<Job>) {}
 
-  async create(createJobDto: CreateJobDto): Promise<Job> {
+  async create(createJobDto: CreateJobDto & { embedding?: number[] }): Promise<Job> {
     const createdJob = new this.jobModel(createJobDto);
     return createdJob.save();
   }
@@ -30,7 +30,10 @@ export class JobRepository {
     return this.jobModel.findById(id).exec();
   }
 
-  async update(id: string, updateJobDto: UpdateJobDto): Promise<Job | null> {
+  async update(
+    id: string,
+    updateJobDto: UpdateJobDto & { embedding?: number[] },
+  ): Promise<Job | null> {
     return this.jobModel
       .findByIdAndUpdate(id, updateJobDto, { new: true })
       .exec();

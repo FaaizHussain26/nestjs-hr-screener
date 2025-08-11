@@ -23,6 +23,10 @@ export class Job extends Document {
 
   @Prop({ default: false })
   isDeleted: boolean;
+
+  // Numeric vector embedding of the job content for vector search
+  @Prop({ type: [Number], default: [] })
+  embedding?: number[];
 }
 
 export const JobSchema = SchemaFactory.createForClass(Job);
