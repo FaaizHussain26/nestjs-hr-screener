@@ -1,9 +1,6 @@
 import {
   Body,
   Controller,
-  FileTypeValidator,
-  MaxFileSizeValidator,
-  ParseFilePipe,
   Post,
   UploadedFile,
   UseInterceptors,
@@ -13,11 +10,12 @@ import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { File } from 'multer';
 import { ResumeAnalyzerService } from '../service/resume-analyzer.service';
 import { UploadFileDto } from './dto/upload-file.dto';
+import { PdfParseFilePipe } from 'src/common/pipes/parse-pipe.pipe';
 
 @Controller('resume-analyzer')
 @ApiTags('resume-analyzer')
 export class ResumeAnalyzerController {
-  constructor(private readonly resumeAnalyzerService: ResumeAnalyzerService) {}
+  constructor(private readonly resumeAnalyzerService: ResumeAnalyzerService) { }
 
   @Post('resume-analyzer')
   @ApiOperation({ summary: 'Upload a PDF file' })
@@ -25,17 +23,10 @@ export class ResumeAnalyzerController {
   @ApiBody({ type: UploadFileDto })
   @UseInterceptors(FileInterceptor('file'))
   analyzer(
-    @Body() payload: UploadFileDto, 
-    @UploadedFile(
-      new ParseFilePipe({
-        validators: [
-          new MaxFileSizeValidator({ maxSize: 24000000 }),
-          new FileTypeValidator({ fileType: 'application/pdf' }),
-        ],
-      }),
-    )
+    @Body() payload: UploadFileDto,
+    @UploadedFile(PdfParseFilePipe)
     file: File,
-  ) {    
+  ) {
     return this.resumeAnalyzerService.analyzer(payload, file);
   }
 }
