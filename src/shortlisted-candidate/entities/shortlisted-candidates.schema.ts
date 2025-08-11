@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema } from 'mongoose';
 
-@Schema({ timestamps: true, collection: 'short-listed-candidates' })
+@Schema({ collection: 'short-listed-candidates' })
 export class ShortlistedCandidates extends Document {
   @Prop({ required: false })
   applicant_name: string;
@@ -42,6 +42,17 @@ export class ShortlistedCandidates extends Document {
   @Prop({ default: false })
   isDuplicated: boolean;
 
+  @Prop({ required: false })
+  job_title: string;
+
+  @Prop({ required: false })
+  applicant_skills: string[];
+
+  @Prop({ default: Date.now })
+  createdAt: Date;
+
+  @Prop({ default: Date.now })
+  updatedAt: Date;
 }
 
 export const ShortlistedSchema = SchemaFactory.createForClass(

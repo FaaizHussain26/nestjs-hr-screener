@@ -25,13 +25,22 @@ import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 export class ShortlistedCandidatesController {
   constructor(
     private readonly candidatesService: ShortlistedCandidatesService,
-  ) {}
+  ) { }
+
   @HttpCode(HttpStatus.OK)
   @Get('/')
   @UseGuards(JwtAuthGuard)
   getAllCandidates(@Query() query: PaginationQueryDto) {
     return this.candidatesService.getAll(query);
   }
+
+  @HttpCode(HttpStatus.OK)
+  @Get('/users-with-jobs/')
+  @UseGuards(JwtAuthGuard)
+  getUsersWithJobs() {
+    return this.candidatesService.listUsersWithJobs();
+  }
+
   @HttpCode(HttpStatus.OK)
   @Get('/dashboard/stats/')
   @UseGuards(JwtAuthGuard)

@@ -14,7 +14,31 @@ export class ShortlistedCandidatesRepository {
   constructor(
     @InjectModel(ShortlistedCandidates.name)
     private readonly candidateModel: Model<ShortlistedCandidates>,
-  ) {}
+  ) { }
+
+
+  async aggregateUsersWithJobs() {
+    return this.candidateModel.aggregate([
+      {
+        $group: {
+          _id: '$job_title',
+          count: { $sum: 1 },
+          data: {
+            $push: {
+              _id: '$_id',
+              applicant_name: '$applicant_name',
+              applicant_phone: '$applicant_phone',
+              applicant_email: '$applicant_email',
+              job_matched: '$job_matched',
+              matched_skills: '$matched_skills',
+              match_score: "$match_score"
+            },
+          },
+        },
+      },
+      { $sort: { count: -1 } },
+    ]);
+  }
 
   async markDuplicates() {
     const duplicates = await this.candidateModel.aggregate([
@@ -100,10 +124,10 @@ export class ShortlistedCandidatesRepository {
     const filter =
       fieldName && fieldValue
         ? {
-            [fieldName]: useRegex
-              ? new RegExp(`^${fieldValue}$`, 'i')
-              : fieldValue,
-          }
+          [fieldName]: useRegex
+            ? new RegExp(`^${fieldValue}$`, 'i')
+            : fieldValue,
+        }
         : {};
     return await this.candidateModel.countDocuments(filter).exec();
   }

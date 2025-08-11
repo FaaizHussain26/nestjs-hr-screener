@@ -8,7 +8,7 @@ import { DeleteQueryDto } from '../controller/dto/delete-shortlisted-candidates.
 export class ShortlistedCandidatesService {
   constructor(
     private readonly candidatesRepository: ShortlistedCandidatesRepository,
-  ) {}
+  ) { }
 
   async create(payload: ShortlistedCandidateDto) {
     const existingCandidate = await this.candidatesRepository.getByEmail(
@@ -29,7 +29,9 @@ export class ShortlistedCandidatesService {
     return await this.candidatesRepository.getbyId(id);
   }
 
-
+  async listUsersWithJobs() {
+    return this.candidatesRepository.aggregateUsersWithJobs();
+  }
   async getDashboardStats() {
     return {
       total_candidates: await this.candidatesRepository.count(),
