@@ -182,10 +182,27 @@ export class UserService {
         user._id as string,
         payload as any,
       );
+      if (!updatedUser) {
+        return { success: false, message: 'Profile update failed' };
+      }
+      const token = await this.jwtService.sign(
+        {
+          sub: updatedUser._id,
+          data: updatedUser,
+        },
+        {
+          secret: this.configService.get<string>('JWT_SECRET'),
+          expiresIn: this.configService.get<string>('JWT_EXPIRY'),
+        },
+      );
+      if (!token) {
+        return { success: false, message: 'Token generation failed' };
+      }
 
       return {
         success: true,
         message: 'Profile updated successfully.',
+        accessToken: token,
         user: updatedUser,
       };
     } catch (error) {
