@@ -32,12 +32,31 @@ export class ResumeAnalyzerService {
       const prompt = resumeAnalyzerPrompt(job, resumeText);
 
       const response = await this.client.chat.completions.create({
-        model: 'gpt-4o-mini',
+        model: 'gpt-3.5-turbo',
         temperature: 0,
         messages: [{ role: 'user', content: prompt }],
       });
 
-      return response.choices[0].message?.content || '';
+      const content = response.choices?.[0]?.message?.content;
+      if (!content) {
+        return { success: false, message: 'Empty response from AI' };
+      }
+
+      const cleaned = content.replace(/```json|```/g, '').trim();
+      try {
+        const parsed = JSON.parse(cleaned);
+
+        return {
+          success: true,
+          data: parsed,
+        };
+      } catch (err) {
+        return {
+          success: false,
+          message: 'AI response is not valid JSON',
+          rawOutput: content,
+        };
+      }
     } catch {
       return {
         success: false,

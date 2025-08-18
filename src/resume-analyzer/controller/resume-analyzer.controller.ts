@@ -1,6 +1,8 @@
 import {
   Body,
   Controller,
+  HttpCode,
+  HttpStatus,
   Post,
   UploadedFile,
   UseInterceptors,
@@ -15,9 +17,10 @@ import { PdfParseFilePipe } from 'src/common/pipes/parse-pipe.pipe';
 @Controller('resume-analyzer')
 @ApiTags('resume-analyzer')
 export class ResumeAnalyzerController {
-  constructor(private readonly resumeAnalyzerService: ResumeAnalyzerService) { }
+  constructor(private readonly resumeAnalyzerService: ResumeAnalyzerService) {}
 
-  @Post('resume-analyzer')
+  @Post('/')
+  @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Upload a PDF file' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({ type: UploadFileDto })
