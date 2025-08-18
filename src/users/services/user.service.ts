@@ -210,26 +210,34 @@ export class UserService {
     }
   }
 
-  async updatePassword(id: string, payload: UpdatePasswordDto) {
+  async updatePassword(user: User, payload: UpdatePasswordDto) {
     try {
-      if (!Types.ObjectId.isValid(id)) {
+      if (!Types.ObjectId.isValid(user._id as string)) {
         return { success: false, message: 'Invalid user ID' };
       }
-      const { currentpassword, newpassword } = payload;
-      const user = await this.userrepo.getbyId(id);
-      if (!user) {
+      const { currentPassword, newPassword } = payload;
+
+      const existingUser = await this.userrepo.getbyId(user._id as string);
+      if (!existingUser) {
         return { success: false, message: 'User not found' };
       }
       const comparePassword = await bcrypt.compare(
-        currentpassword,
-        user.password,
+        currentPassword,
+        existingUser.password,
       );
       if (!comparePassword) {
         return { success: false, message: 'Old Password is not correct' };
       }
-      const hashedPassword = await bcrypt.hash(newpassword, 10);
-      user.password = hashedPassword;
-      await this.userrepo.updateProfile(id, user);
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      if (currentPassword === newPassword) {
+        return {
+          success: false,
+          message: 'new password should not be same as old password',
+        };
+      }
+      await this.userrepo.updateProfile(user._id as string, {
+        password: hashedPassword,
+      });
 
       return { success: true, message: 'Password updated successfully.' };
     } catch (error) {

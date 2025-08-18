@@ -123,9 +123,9 @@ export class UserController {
   @Put('auth/update-password')
   @UseGuards(JwtAuthGuard)
   async updatePassword(
-    @Param('id') id: string,
+    @AuthUser() user: User,
     @Body() payload: UpdatePasswordDto,
   ) {
-    return await this.userservice.updatePassword(id, payload);
+    return await this.userservice.updatePassword(user, payload);
   }
 }
