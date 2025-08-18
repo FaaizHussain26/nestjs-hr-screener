@@ -4,6 +4,7 @@ import { RegistrationUserDto } from './registration-user.dto';
 
 class SignUpUserWithoutPasswordDto extends OmitType(RegistrationUserDto, [
   'password',
+  'confirmPassword',
 ] as const) {}
 
 export class UpdateProfileDto extends PartialType(

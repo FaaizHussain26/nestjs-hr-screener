@@ -9,7 +9,7 @@ export class UpdatePasswordDto {
   })
   @IsString()
   @MinLength(6)
-  currentpassword: string;
+  currentPassword: string;
 
   @ApiProperty({
     description: 'Password',
@@ -18,7 +18,7 @@ export class UpdatePasswordDto {
   })
   @IsString()
   @MinLength(6)
-  newpassword: string;
+  newPassword: string;
 
   @IsString()
   @MinLength(6)
